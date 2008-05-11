@@ -1,0 +1,6 @@
+; $Id$
+name = "IMCE Mkdir"
+description = "Adds directory creation functionality to IMCE"
+core = "6.x"
+dependencies[] = imce
+

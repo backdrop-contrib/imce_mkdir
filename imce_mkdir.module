@@ -1,0 +1,105 @@
+<?php
+// $Id$
+
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function imce_mkdir_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+
+    case 'imce_profile_form':
+      foreach (element_children($form['profile']['directories']) as $key) {
+        $form['profile']['directories'][$key]['mkdir'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Create directories'),
+          '#default_value' => $form_state['profile']['directories'][$key]['mkdir'],
+        );
+      }
+      $form['profile']['mkdirnum'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Maximum number of sub-directories'),
+        '#default_value' => $form_state['profile']['mkdirnum'],
+        '#description' => t('This setting is only applicable if you allow directory creation under any of the predefined directories. Define here the maximum number of subdirectories a directory can have. Setting this to 0 removes the limit and also allows infinite subdirectory depth.'),
+      );
+      break;
+
+  }
+}
+/**
+ * Custom profile process. Redefines mkdir permission based on some other parameters.
+ */
+function imce_mkdir_process_profile(&$imce) {
+  if (!$imce['error']) {
+    $imce['mkdirnum'] = (int) $imce['mkdirnum'];
+    $imce['perm']['mkdir'] = $imce['perm']['mkdir'] && (!$imce['mkdirnum'] || ($imce['direct'] && $imce['mkdirnum'] > count($imce['subdirectories'])));
+  }
+}
+
+/**
+ * Custom content. Returns directory creation form
+ */
+function imce_mkdir_content(&$imce) {
+  drupal_add_js(drupal_get_path('module', 'imce_mkdir') .'/imce_mkdir.js');
+  return $imce['error'] ? '' : drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
+}
+
+/**
+ * Mkdir form.
+ */
+function imce_mkdir_form(&$form_state, $ref) {
+  $imce =& $ref['imce'];
+  $form['dirname'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Directory name'),
+    '#size' => 12,
+    '#maxlength' => 64,
+    '#prefix' => '<div class="container-inline">',
+  );
+  $form['mkdir'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create'),
+    '#submit' => $imce['perm']['mkdir'] ? array('imce_mkdir_submit') : NULL,//permission for submission
+    '#suffix' => '</div>',
+  );
+  $form = array('fset_mkdir' => array('#type' => 'fieldset', '#title' => t('New directory')) + $form);
+  $form['#attributes']['class'] = $imce['perm']['mkdir'] ? '' : 'imce-hide';
+  $form['#action'] = $imce['url'];
+  return $form;
+}
+
+/**
+ * Submit mkdir form.
+ */
+function imce_mkdir_submit($form, &$form_state) {
+  $form_state['redirect'] = FALSE;
+  $imce =& $form['#parameters'][2]['imce'];
+  $dirname = $form_state['values']['dirname'];
+  $imce['diradded'] = array();
+  $dirpath = file_directory_path() . ($imce['dir'] == '.' ? '' : '/'. $imce['dir']) .'/'. $dirname;
+
+  if (!preg_match('/^[A-Za-z0-9_\-]+$/', $dirname)) {
+    return drupal_set_message(t('Directory name may contain only alphanumeric characters, hyphen and underscore.'), 'error');
+  }
+
+  if (file_exists($dirpath)) {
+    return drupal_set_message(t('Directory %dir already exists.', array('%dir' => $dirname)), 'error');
+  }
+
+  if (!file_check_directory($dirpath, FILE_CREATE_DIRECTORY)) {
+    return drupal_set_message(t('Directory creation failed!'), 'error');
+  }
+
+  $imce['diradded'][] = $imce['subdirectories'][] = $dirname;
+}
+
+/**
+ * Ajax operation: mkdir
+ */
+function imce_js_mkdir(&$imce) {
+  if ($imce['perm']['mkdir']) {
+    $_POST['op'] = t('Create');
+    drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
+    return array_map('rawurlencode', $imce['diradded']);
+  }
+}
