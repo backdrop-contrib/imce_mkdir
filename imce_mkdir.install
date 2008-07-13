@@ -10,6 +10,7 @@ function imce_mkdir_install() {
   foreach ($profiles as $i => $profile) {
     foreach ($profile['directories'] as $j => $directory) {
       $profiles[$i]['directories'][$j]['mkdir'] = $i == 1 ? 1 : 0;//user#1's profile id is 1 which must be allowed by default.
+      $profiles[$i]['directories'][$j]['rmdir'] = $i == 1 ? 1 : 0;
     }
     $profiles[$i]['mkdirnum'] = $i == 1 ? 0 : 2;//default number of subdirectories. unlimited for user#1, 2 for others.
   }
@@ -34,7 +35,7 @@ function imce_mkdir_uninstall() {
   $profiles = variable_get('imce_profiles', array());
   foreach ($profiles as $i => $profile) {
     foreach ($profile['directories'] as $j => $directory) {
-      unset($profiles[$i]['directories'][$j]['mkdir']);
+      unset($profiles[$i]['directories'][$j]['mkdir'], $profiles[$i]['directories'][$j]['rmdir']);
     }
     unset($profiles[$i]['mkdirnum']);
   }
