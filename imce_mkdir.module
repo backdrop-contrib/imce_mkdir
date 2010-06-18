@@ -167,6 +167,10 @@ function imce_mkdir_rmdir_batch(&$imce, $dirnames = array()) {
  * Recursive directory deletion
  */
 function imce_mkdir_rmdir_recursive($path) {
+  static $dirlen;
+  if (!isset($dirlen)) {
+    $dirlen = strlen(file_directory_path()) + 1;
+  }
   if (is_dir($path) && !is_link($path)) {
     if ($handle = @opendir($path)) {
       while (($file = readdir($handle)) !== FALSE) {
@@ -175,7 +179,8 @@ function imce_mkdir_rmdir_recursive($path) {
         }
         $filepath = $path .'/'. $file;
         if (!imce_mkdir_rmdir_recursive($filepath)) {
-          drupal_set_message(t('%path could not be removed.', array('%path' => $filepath)), 'error');
+          drupal_set_message(t('%path could not be removed.', array('%path' => substr($filepath, $dirlen))), 'error');
+          break;
         }
       }
       closedir($handle);
@@ -189,10 +194,35 @@ function imce_mkdir_rmdir_recursive($path) {
  * Delete a file in recursive directory deletion.
  */
 function imce_mkdir_unlink($filepath) {
-  if (!file_delete($filepath)) {
+
+  if (function_exists('imce_delete_filepath')) {
+    return imce_delete_filepath($filepath);
+  }
+
+  $file = db_fetch_object(db_query("SELECT * FROM {files} WHERE filepath = '%s'", $filepath));
+  //file exists in database
+  if ($file) {
+    //prevent imce returning ref count
+    $file->imce_noref = TRUE;
+    //check references
+    $refs = array_filter(module_invoke_all('file_references', $file));
+    //file is in use
+    if (!empty($refs)) {
+      drupal_set_message(t('%filename is in use by another application.', array('%filename' => $file->filename)), 'error');
+      return FALSE;
+    }
+    //prepare deletion
+    module_invoke_all('file_delete', $file);
+    if (!file_delete($file->filepath)) {
+      return FALSE;
+    }
+    db_query('DELETE FROM {files} WHERE fid = %d', $file->fid);
+  }
+  //not in db. probably loaded via ftp.
+  elseif (!file_delete($filepath)) {
     return FALSE;
   }
-  db_query("DELETE FROM {files} WHERE filepath = '%s'", $filepath);
+
   return TRUE;
 }
 
