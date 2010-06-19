@@ -1,6 +1,10 @@
 ; $Id$
 name = "IMCE Mkdir"
 description = "Allows users manage directories in IMCE"
-core = "6.x"
-dependencies[] = imce
+core = "7.x"
+package = "Media"
+dependencies[] = "imce"
+
+files[] = "imce_mkdir.install"
+files[] = "imce_mkdir.module"
 

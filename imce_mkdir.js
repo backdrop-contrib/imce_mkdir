@@ -1,5 +1,6 @@
 // $Id$
 
+(function($) {
 //add hook:load. process mkdir form 
 imce.hooks.load.push(function () {
   if (!(imce.mkdirForm = imce.el('imce-mkdir-form'))) return;
@@ -104,3 +105,5 @@ imce.rmdirSubdirs = function(dir, subdirs) {
     }
   }
 };
+
+})(jQuery);

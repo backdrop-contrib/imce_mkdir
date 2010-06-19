@@ -48,16 +48,17 @@ function imce_mkdir_process_profile(&$imce) {
 function imce_mkdir_content(&$imce) {
   if (!$imce['error'] && (imce_perm_exists($imce, 'mkdir') || imce_perm_exists($imce, 'rmdir'))) {
     drupal_add_js(drupal_get_path('module', 'imce_mkdir') .'/imce_mkdir.js');
-    return drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
+    $form = drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
+    return drupal_render($form);
   }
 }
 
 /**
  * Mkdir form.
  */
-function imce_mkdir_form(&$form_state, $ref) {
+function imce_mkdir_form($form, &$form_state, $ref) {
   $imce =& $ref['imce'];
-  $mkdir['html1']['#value'] = '<div class="container-inline">';
+  $mkdir['html1']['#markup'] = '<div class="container-inline">';
   $mkdir['dirname'] = array(
     '#type' => 'textfield',
     '#title' => t('Subdirectory name'),
@@ -78,7 +79,7 @@ function imce_mkdir_form(&$form_state, $ref) {
       '#submit' => $imce['perm']['rmdir'] ? array('imce_mkdir_rmdir_submit') : NULL,
     );
   }
-  $mkdir['html2']['#value'] = '</div>';
+  $mkdir['html2']['#markup'] = '</div>';
   $form['fset_mkdir'] = array(
     '#type' => 'fieldset',
     '#title' => t('Manage subdirectories'),
@@ -92,7 +93,8 @@ function imce_mkdir_form(&$form_state, $ref) {
  */
 function imce_mkdir_submit($form, &$form_state) {
   $form_state['redirect'] = FALSE;
-  imce_mkdir_batch($form['#parameters'][2]['imce'], array(rawurldecode($form_state['values']['dirname'])));
+  $imce = &$form_state['build_info']['args'][0]['imce'];
+  imce_mkdir_batch($imce, array(rawurldecode($form_state['values']['dirname'])));
 }
 
 /**
@@ -102,7 +104,7 @@ function imce_mkdir_batch(&$imce, $dirnames = array()) {
   if (!isset($imce['diradded'])) {
     $imce['diradded'] = array();
   }
-  $parent = file_directory_path() . ($imce['dir'] == '.' ? '' : '/'. $imce['dir']);
+  $parent = imce_dir_uri($imce);
 
   foreach ($dirnames as $dirname) {
     if (!preg_match('/^[A-Za-z0-9_\-]+$/', $dirname)) {
@@ -110,14 +112,14 @@ function imce_mkdir_batch(&$imce, $dirnames = array()) {
       continue;
     }
 
-    $dirpath = $parent .'/'. $dirname;
+    $dirpath = $parent . $dirname;
 
     if (file_exists($dirpath)) {
       drupal_set_message(t('Subdirectory %dir already exists.', array('%dir' => $dirname)), 'error');
       continue;
     }
 
-    if (!file_check_directory($dirpath, FILE_CREATE_DIRECTORY)) {
+    if (!file_prepare_directory($dirpath, FILE_CREATE_DIRECTORY)) {
       drupal_set_message(t('Subdirectory %dir could not be created.', array('%dir' => $dirname)), 'error');
       continue;
     }
@@ -132,7 +134,8 @@ function imce_mkdir_batch(&$imce, $dirnames = array()) {
  */
 function imce_mkdir_rmdir_submit($form, &$form_state) {
   $form_state['redirect'] = FALSE;
-  imce_mkdir_rmdir_batch($form['#parameters'][2]['imce'], array(rawurldecode($form_state['values']['dirname'])));
+  $imce = &$form_state['build_info']['args'][0]['imce'];
+  imce_mkdir_rmdir_batch($imce, array(rawurldecode($form_state['values']['dirname'])));
 }
 
 /**
@@ -142,7 +145,7 @@ function imce_mkdir_rmdir_batch(&$imce, $dirnames = array()) {
   if (!isset($imce['dirremoved'])) {
     $imce['dirremoved'] = array();
   }
-  $parent = file_directory_path() . ($imce['dir'] == '.' ? '' : '/'. $imce['dir']);
+  $parent = imce_dir_uri($imce);
 
   foreach ($dirnames as $dirname) {
     $index = array_search($dirname, $imce['subdirectories']);
@@ -152,7 +155,7 @@ function imce_mkdir_rmdir_batch(&$imce, $dirnames = array()) {
       continue;
     }
 
-    $dirpath = $parent .'/'. $dirname;
+    $dirpath = $parent . $dirname;
     if (!imce_mkdir_rmdir_recursive($dirpath)) {
       drupal_set_message(t('Subdirectory %dir could not be removed.', array('%dir' => $dirname)), 'error');
       continue;
@@ -167,33 +170,27 @@ function imce_mkdir_rmdir_batch(&$imce, $dirnames = array()) {
  * Recursive directory deletion
  */
 function imce_mkdir_rmdir_recursive($path) {
+  static $dirlen;
+  if (!isset($dirlen)) {
+    $dirlen = strlen(file_directory_path(file_uri_scheme($path))) + 1;
+  }
   if (is_dir($path) && !is_link($path)) {
     if ($handle = @opendir($path)) {
       while (($file = readdir($handle)) !== FALSE) {
         if ($file == '.' || $file == '..') {
           continue;
         }
-        $filepath = $path .'/'. $file;
+        $filepath = $path . '/' . $file;
         if (!imce_mkdir_rmdir_recursive($filepath)) {
-          drupal_set_message(t('%path could not be removed.', array('%path' => $filepath)), 'error');
+          drupal_set_message(t('%path could not be removed.', array('%path' => substr($filepath, $dirlen))), 'error');
+          break;
         }
       }
       closedir($handle);
     }
     return @rmdir($path);
   }
-  return imce_mkdir_unlink($path);
-}
-
-/**
- * Delete a file in recursive directory deletion.
- */
-function imce_mkdir_unlink($filepath) {
-  if (!file_delete($filepath)) {
-    return FALSE;
-  }
-  db_query("DELETE FROM {files} WHERE filepath = '%s'", $filepath);
-  return TRUE;
+  return imce_delete_filepath($path);
 }
 
 /**
