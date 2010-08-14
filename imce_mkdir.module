@@ -47,7 +47,9 @@ function imce_mkdir_process_profile(&$imce) {
  */
 function imce_mkdir_content(&$imce) {
   if (!$imce['error'] && (imce_perm_exists($imce, 'mkdir') || imce_perm_exists($imce, 'rmdir'))) {
-    drupal_add_js(drupal_get_path('module', 'imce_mkdir') .'/imce_mkdir.js');
+    $path = drupal_get_path('module', 'imce_mkdir');
+    drupal_add_js($path . '/imce_mkdir.js');
+    drupal_add_css($path . '/imce_mkdir.css');
     $form = drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
     return drupal_render($form);
   }
@@ -146,12 +148,18 @@ function imce_mkdir_rmdir_batch(&$imce, $dirnames = array()) {
     $imce['dirremoved'] = array();
   }
   $parent = imce_dir_uri($imce);
+  $prefix = ($imce['dir'] == '.' ? '' : $imce['dir'] . '/');
 
   foreach ($dirnames as $dirname) {
     $index = array_search($dirname, $imce['subdirectories']);
 
     if ($index === FALSE) {
       drupal_set_message(t('Subdirectory %dir does not exist.', array('%dir' => $dirname)), 'error');
+      continue;
+    }
+
+    if (isset($imce['directories'][$prefix . $dirname])) {
+      drupal_set_message(t('Subdirectory %dir is a predefined directory and can not be removed.', array('%dir' => $dirname)), 'error');
       continue;
     }
 
