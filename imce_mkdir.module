@@ -159,8 +159,8 @@ function imce_mkdir_rmdir_batch(&$imce, $dirnames = array()) {
     }
 
     if (isset($imce['directories'][$prefix . $dirname])) {
-      drupal_set_message(t('You are not allowed to delete a predefined directory.'), 'error');
-      return;
+      drupal_set_message(t('Subdirectory %dir is a predefined directory and can not be removed.', array('%dir' => $dirname)), 'error');
+      continue;
     }
 
     $dirpath = $parent .'/'. $dirname;
