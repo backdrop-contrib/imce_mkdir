@@ -21,6 +21,8 @@ imce.hooks.load.push(function () {
   imce.hooks.navigate.push(function (data, olddir, cached) {
     imce.mkdirRefreshOps();
   });
+  // add subdir selector
+  imce.mkdirSubSelector();
 });
 
 //change dirops states.
@@ -38,6 +40,7 @@ imce.mkdirSuccess = function (response) {
   if (response.data) {
     if (response.data.diradded) imce.dirSubdirs(imce.conf.dir, response.data.diradded);
     if (response.data.dirremoved) imce.rmdirSubdirs(imce.conf.dir, response.data.dirremoved);
+    imce.mkdirSSBuild && imce.mkdirSSBuild();
   }
   if (response.messages) imce.resMsgs(response.messages);
 };
@@ -102,8 +105,62 @@ imce.rmdirSubdirs = function(dir, subdirs) {
     if (!$('li', branch.ul).size()) {
       $(branch.ul).remove();
       $(branch.li).removeClass('expanded').addClass('leaf');
+      delete branch.ul;
     }
   }
+};
+
+// visual sub directory selector
+imce.mkdirSubSelector = function () {
+  var ie7 = $('html').is('.ie-7');
+  var $inp = $(imce.el('edit-dirname'));
+  // create selector
+  var $subsel = $(imce.newEl('div')).attr({id: 'subdir-selector'}).hide().appendTo(document.body);
+  // create selector button
+  var $button = $(imce.newEl('a')).attr({id: 'subdir-selector-button', href: '#'}).click(function() {
+    var offset = $inp.offset();
+    offset.top += $inp.outerHeight();
+    $subsel.css(offset).slideDown('normal', itemfocus);
+    $(document).mouseup(hide);
+    ie7 && $subsel.css('width', 'auto') && $subsel.width($subsel[0].offsetWidth);
+    return false;
+  }).insertAfter($inp[0]);
+  // focus on first subdir item
+  var itemfocus = function(){$subsel.children().eq(0).focus()};
+  // hide selector
+  var hide = function(e){
+    if (e.target != $subsel[0]) {
+      $subsel.hide();
+      $(document).unbind('mouseup', hide);
+    }
+  };
+  // adjust newdir input
+  var newdir = imce.el('edit-newdirname');
+  newdir && $(newdir).css('marginRight', parseFloat($(newdir).css('marginRight')) + parseFloat($button.css('width')));
+  // subdir click
+  var subclick = function() {
+    $inp.val(this.title.substr(this.title.lastIndexOf('/') + 1)).focus();
+    $subsel.hide();
+    return false;
+  };
+  // subdir process
+  var subproc = function(i, a) {
+    $(imce.newEl('a')).attr({href: '#', title: a.title}).html(a.innerHTML).click(subclick).appendTo($subsel[0]);
+  };
+  // navigation hook
+  var navhook = imce.mkdirSSBuild = function() {
+    var branch = imce.tree[imce.conf.dir];
+    $subsel.empty();
+    if (branch.ul && branch.ul.firstChild) {
+      $(branch.ul).children('li').children('a').each(subproc);
+      $button.css('visibility', 'visible');
+    }
+    else {
+      $button.css('visibility', 'hidden');
+    }
+  };
+  imce.hooks.navigate.push(navhook);
+  navhook();
 };
 
 })(jQuery);
