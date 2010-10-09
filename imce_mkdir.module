@@ -20,7 +20,7 @@ function imce_mkdir_form_imce_profile_form_alter(&$form, &$form_state) {
   $form['profile']['mkdirnum'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum number of subdirectories'),
-    '#default_value' => $form_state['profile']['mkdirnum'],
+    '#default_value' => isset($form_state['profile']['mkdirnum']) ? $form_state['profile']['mkdirnum'] : 2,
     '#description' => t('This setting is applicable only if you allow subdirectory creation under any of the predefined directories. Define here the maximum number of subdirectories a directory can have. Setting this to 0 removes the limit and also allows infinite subdirectory depth.'),
   );
 }
