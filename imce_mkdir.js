@@ -115,7 +115,7 @@ imce.mkdirSubSelector = function () {
   var ie7 = $('html').is('.ie-7');
   var $inp = $(imce.el('edit-dirname'));
   // create selector
-  var $subsel = $(imce.newEl('div')).attr({id: 'subdir-selector'}).hide().appendTo(document.body);
+  var $subsel = $(imce.newEl('div')).attr({id: 'subdir-selector'}).css('display', 'none').appendTo(document.body);
   // create selector button
   var $button = $(imce.newEl('a')).attr({id: 'subdir-selector-button', href: '#'}).click(function() {
     var offset = $inp.offset();
