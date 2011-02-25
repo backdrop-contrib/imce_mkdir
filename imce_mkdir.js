@@ -1,4 +1,3 @@
-// $Id$
 
 (function($) {
 //add hook:load. process mkdir form 

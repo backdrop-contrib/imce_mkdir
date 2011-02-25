@@ -1,4 +1,3 @@
-// $Id$
 
 IMCE Mkdir
 http://drupal.org/project/imce_mkdir
