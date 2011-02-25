@@ -1,4 +1,3 @@
-; $Id$
 name = "IMCE Mkdir"
 description = "Allows users manage directories in IMCE"
 core = "7.x"
