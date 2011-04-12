@@ -1,4 +1,3 @@
-
 (function($) {
 //add hook:load. process mkdir form 
 imce.hooks.load.push(function () {
@@ -14,7 +13,7 @@ imce.hooks.load.push(function () {
     var dop = this.id.substr(5);
     $(imce.mkdirOps[dop] = this).click(function() {imce.dopSubmit(dop); return false;});
   });
-  imce.opAdd({name: 'mngdir', title: Drupal.t('Manage directories'), content: form});
+  imce.opAdd({name: 'mngdir', title: Drupal.t('Directory'), content: form});
   imce.mkdirRefreshOps();
   //add hook:navigate. set dirops visibility
   imce.hooks.navigate.push(function (data, olddir, cached) {
