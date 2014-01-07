@@ -101,7 +101,7 @@ imce.rmdirSubdirs = function(dir, subdirs) {
         }
       }
     }
-    if (!$('li', branch.ul).size()) {
+    if (!$('li', branch.ul).length) {
       $(branch.ul).remove();
       $(branch.li).removeClass('expanded').addClass('leaf');
       delete branch.ul;
