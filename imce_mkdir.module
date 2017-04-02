@@ -4,7 +4,7 @@
  * Implements hook_form_formID_alter().
  */
 function imce_mkdir_form_imce_profile_form_alter(&$form, &$form_state) {
-  include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'imce_mkdir') . '/imce_mkdir.inc';
+  include_once BACKDROP_ROOT . '/' . backdrop_get_path('module', 'imce_mkdir') . '/imce_mkdir.inc';
   return _imce_mkdir_form_imce_profile_form_alter($form, $form_state);
 }
 
@@ -24,11 +24,11 @@ function imce_mkdir_process_profile(&$imce) {
  */
 function imce_mkdir_content(&$imce) {
   if (!$imce['error'] && (imce_perm_exists($imce, 'mkdir') || imce_perm_exists($imce, 'rmdir'))) {
-    $path = drupal_get_path('module', 'imce_mkdir');
-    drupal_add_js($path . '/imce_mkdir.js');
-    drupal_add_css($path . '/imce_mkdir.css');
-    $form = drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
-    return drupal_render($form);
+    $path = backdrop_get_path('module', 'imce_mkdir');
+    backdrop_add_js($path . '/imce_mkdir.js');
+    backdrop_add_css($path . '/imce_mkdir.css');
+    $form = backdrop_get_form('imce_mkdir_form', array('imce' => &$imce));
+    return backdrop_render($form);
   }
 }
 
@@ -37,7 +37,7 @@ function imce_mkdir_content(&$imce) {
  */
 function imce_mkdir_form($form, &$form_state, $ref) {
   $imce =& $ref['imce'];
-  include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'imce_mkdir') . '/imce_mkdir.inc';
+  include_once BACKDROP_ROOT . '/' . backdrop_get_path('module', 'imce_mkdir') . '/imce_mkdir.inc';
   return _imce_mkdir_form($form, $form_state, $imce);
 }
 
@@ -47,7 +47,7 @@ function imce_mkdir_form($form, &$form_state, $ref) {
 function imce_js_mkdir(&$imce) {
   if ($imce['perm']['mkdir']) {
     $_POST['op'] = t('Add');
-    drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
+    backdrop_get_form('imce_mkdir_form', array('imce' => &$imce));
     return array('diradded' => array_map('rawurlencode', $imce['diradded']));
   }
 }
@@ -58,7 +58,7 @@ function imce_js_mkdir(&$imce) {
 function imce_js_rmdir(&$imce) {
   if ($imce['perm']['rmdir']) {
     $_POST['op'] = t('Remove');
-    drupal_get_form('imce_mkdir_form', array('imce' => &$imce));
+    backdrop_get_form('imce_mkdir_form', array('imce' => &$imce));
     return array('dirremoved' => array_map('rawurlencode', $imce['dirremoved']));
   }
 }
