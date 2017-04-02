@@ -1,6 +1,5 @@
 name = "IMCE Mkdir"
 description = "Allows users manage directories in IMCE"
-core = "7.x"
+backdrop = "1.x"
 package = "Media"
 dependencies[] = "imce"
-

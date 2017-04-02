@@ -78,23 +78,23 @@ function imce_mkdir_batch(&$imce, $dirnames = array()) {
 
   foreach ($dirnames as $dirname) {
     if (!preg_match('/^[A-Za-z0-9_\-]+$/', $dirname)) {
-      drupal_set_message(t('%dirname is not a valid directory name. It should contain only alphanumeric characters, hyphen and underscore.', array('%dirname' => $dirname)), 'error');
+      backdrop_set_message(t('%dirname is not a valid directory name. It should contain only alphanumeric characters, hyphen and underscore.', array('%dirname' => $dirname)), 'error');
       continue;
     }
 
     $dirpath = $parent . $dirname;
 
     if (file_exists($dirpath)) {
-      drupal_set_message(t('Subdirectory %dir already exists.', array('%dir' => $dirname)), 'error');
+      backdrop_set_message(t('Subdirectory %dir already exists.', array('%dir' => $dirname)), 'error');
       continue;
     }
 
     if (!file_prepare_directory($dirpath, FILE_CREATE_DIRECTORY)) {
-      drupal_set_message(t('Subdirectory %dir could not be created.', array('%dir' => $dirname)), 'error');
+      backdrop_set_message(t('Subdirectory %dir could not be created.', array('%dir' => $dirname)), 'error');
       continue;
     }
 
-    drupal_set_message(t('Subdirectory %dir has been added.', array('%dir' => $dirname)));
+    backdrop_set_message(t('Subdirectory %dir has been added.', array('%dir' => $dirname)));
     $imce['diradded'][] = $imce['subdirectories'][] = $dirname;
   }
 }
@@ -122,22 +122,22 @@ function imce_mkdir_rmdir_batch(&$imce, $dirnames = array()) {
     $index = array_search($dirname, $imce['subdirectories']);
 
     if ($index === FALSE) {
-      drupal_set_message(t('Subdirectory %dir does not exist.', array('%dir' => $dirname)), 'error');
+      backdrop_set_message(t('Subdirectory %dir does not exist.', array('%dir' => $dirname)), 'error');
       continue;
     }
 
     if (isset($imce['directories'][$prefix . $dirname])) {
-      drupal_set_message(t('Subdirectory %dir is a predefined directory and can not be removed.', array('%dir' => $dirname)), 'error');
+      backdrop_set_message(t('Subdirectory %dir is a predefined directory and can not be removed.', array('%dir' => $dirname)), 'error');
       continue;
     }
 
     $dirpath = $parent . $dirname;
     if (!imce_mkdir_rmdir_recursive($dirpath)) {
-      drupal_set_message(t('Subdirectory %dir could not be removed.', array('%dir' => $dirname)), 'error');
+      backdrop_set_message(t('Subdirectory %dir could not be removed.', array('%dir' => $dirname)), 'error');
       continue;
     }
 
-    drupal_set_message(t('Subdirectory %dir has been removed.', array('%dir' => $dirname)));
+    backdrop_set_message(t('Subdirectory %dir has been removed.', array('%dir' => $dirname)));
     $imce['dirremoved'] = array_merge($imce['dirremoved'], array_splice($imce['subdirectories'], $index, 1));
   }
 }
@@ -158,7 +158,7 @@ function imce_mkdir_rmdir_recursive($path) {
         }
         $filepath = $path . '/' . $file;
         if (!imce_mkdir_rmdir_recursive($filepath)) {
-          drupal_set_message(t('%path could not be removed.', array('%path' => substr($filepath, $dirlen))), 'error');
+          backdrop_set_message(t('%path could not be removed.', array('%path' => substr($filepath, $dirlen))), 'error');
           break;
         }
       }

@@ -1,6 +1,6 @@
 
 (function($) {
-//add hook:load. process mkdir form 
+//add hook:load. process mkdir form
 imce.hooks.load.push(function () {
   if (!(imce.mkdirForm = imce.el('imce-mkdir-form'))) return;
   var form = $(imce.mkdirForm);
@@ -14,7 +14,7 @@ imce.hooks.load.push(function () {
     var dop = this.id.substr(5);
     $(imce.mkdirOps[dop] = this).click(function() {imce.dopSubmit(dop); return false;});
   });
-  imce.opAdd({name: 'mngdir', title: Drupal.t('Directory'), content: form});
+  imce.opAdd({name: 'mngdir', title: Backdrop.t('Directory'), content: form});
   imce.mkdirRefreshOps();
   //add hook:navigate. set dirops visibility
   imce.hooks.navigate.push(function (data, olddir, cached) {
@@ -50,20 +50,20 @@ imce.dopValidate = function(dop) {
   switch (dop) {
     case 'mkdir':
       if (imce.conf.mkdirnum && branch.ul && branch.ul.childNodes.length >= imce.conf.mkdirnum) {
-        return imce.setMessage(Drupal.t('You are not alllowed to create more than %num directories.', {'%num': imce.conf.mkdirnum}), 'error');
+        return imce.setMessage(Backdrop.t('You are not alllowed to create more than %num directories.', {'%num': imce.conf.mkdirnum}), 'error');
       }
       if (dirname.search(/^[A-Za-z0-9_\-]+$/) == -1) {
-        return imce.setMessage(Drupal.t('%dirname is not a valid directory name. It should contain only alphanumeric characters, hyphen and underscore.', {'%dirname': dirname}), 'error');
+        return imce.setMessage(Backdrop.t('%dirname is not a valid directory name. It should contain only alphanumeric characters, hyphen and underscore.', {'%dirname': dirname}), 'error');
       }
       if (imce.tree[newdir]) {
-        return imce.setMessage(Drupal.t('Subdirectory %dir already exists.', {'%dir': dirname}), 'error');
+        return imce.setMessage(Backdrop.t('Subdirectory %dir already exists.', {'%dir': dirname}), 'error');
       }
       return true;
     case 'rmdir':
       if (!imce.tree[newdir]) {
-        return imce.setMessage(Drupal.t('Subdirectory %dir does not exist.', {'%dir': dirname}), 'error');
+        return imce.setMessage(Backdrop.t('Subdirectory %dir does not exist.', {'%dir': dirname}), 'error');
       }
-      return confirm(Drupal.t('Are you sure want to delete this subdirectory with all directories and files in it?'));
+      return confirm(Backdrop.t('Are you sure want to delete this subdirectory with all directories and files in it?'));
   }
 
   var func = dop +'DopValidate';
