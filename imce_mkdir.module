@@ -1,17 +1,6 @@
 <?php
 
 /**
- * Implements hook_config_info().
- */
-function imce_mkdir_config_info() {
-  $prefixes['imce_mkdir.settings'] = array(
-    'label' => t('IMCE mkdir settings'),
-    'group' => t('Configuration'),
-  );
-  return $prefixes;
-}
-
-/**
  * Implements hook_permission().
  */
 function imce_mkdir_permission() {
