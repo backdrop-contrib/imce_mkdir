@@ -1,6 +1,29 @@
 <?php
 
 /**
+ * Implements hook_config_info().
+ */
+function imce_mkdir_config_info() {
+  $prefixes['imce_mkdir.settings'] = array(
+    'label' => t('IMCE mkdir settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function imce_mkdir_permission() {
+  return array(
+    'administer imce_mkdir' => array(
+      'title' => t('Administer IMCE mkdir'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+/**
  * Implements hook_form_formID_alter().
  */
 function imce_mkdir_form_imce_profile_form_alter(&$form, &$form_state) {
