@@ -1,5 +1,9 @@
-name = "IMCE Mkdir"
+type = module
+name = IMCE Mkdir
 description = "Allows users to manage directories in IMCE"
-backdrop = "1.x"
-package = "Media"
-dependencies[] = "imce"
+backdrop = 1.x
+package = Media
+
+dependencies[] = imce
+
+configure = admin/config/media/imce

@@ -1,6 +1,18 @@
 <?php
 
 /**
+ * Implements hook_permission().
+ */
+function imce_mkdir_permission() {
+  return array(
+    'administer imce_mkdir' => array(
+      'title' => t('Administer IMCE mkdir'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+/**
  * Implements hook_form_formID_alter().
  */
 function imce_mkdir_form_imce_profile_form_alter(&$form, &$form_state) {
