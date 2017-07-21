@@ -10,7 +10,7 @@
  */
 function imce_mkdir_install() {
   // Update profiles. Add mkdir settings.
-  $profiles = config_get('imce_profiles', array());
+  $profiles = config_get('imce.settings', 'imce_profiles');
   foreach ($profiles as $i => $profile) {
     foreach ($profile['directories'] as $j => $directory) {
       $profiles[$i]['directories'][$j]['mkdir'] = $i == 1 ? 1 : 0;
@@ -18,17 +18,17 @@ function imce_mkdir_install() {
     }
     $profiles[$i]['mkdirnum'] = $i == 1 ? 0 : 2;
   }
-  config_set('imce_profiles', $profiles);
+  config_set('imce.settings', 'imce_profiles', $profiles);
 
   // Register custom content function
-  $funcs = config_get('imce_custom_content', array());
+  $funcs = config_get('imce.settings', 'imce_custom_content');
   $funcs['imce_mkdir_content'] = 1;
-  config_set('imce_custom_content', $funcs);
+  config_set('imce.settings', 'imce_custom_content', $funcs);
 
   // Register custom profile process
-  $funcs = config_get('imce_custom_process', array());
+  $funcs = config_get('imce.settings', 'imce_custom_process');
   $funcs['imce_mkdir_process_profile'] = 1;
-  config_set('imce_custom_process', $funcs);
+  config_set('imce.settings', 'imce_custom_process', $funcs);
 }
 
 /**
@@ -36,22 +36,22 @@ function imce_mkdir_install() {
  */
 function imce_mkdir_uninstall() {
   // Update profiles. Delete mkdir settings.
-  $profiles = config_get('imce_profiles', array());
+  $profiles = config_get('imce.settings', 'imce_profiles');
   foreach ($profiles as $i => $profile) {
     foreach ($profile['directories'] as $j => $directory) {
       unset($profiles[$i]['directories'][$j]['mkdir'], $profiles[$i]['directories'][$j]['rmdir']);
     }
     unset($profiles[$i]['mkdirnum']);
   }
-  config_set('imce_profiles', $profiles);
+  config_set('imce.settigs', 'imce_profiles', $profiles);
 
   // Unregister custom content function
-  $funcs = config_get('imce_custom_content', array());
+  $funcs = config_get('imce.settings', 'imce_custom_content');
   unset($funcs['imce_mkdir_content']);
-  config_set('imce_custom_content', $funcs);
+  config_set('imce.settings', 'imce_custom_content', $funcs);
 
   // Unregister custom profile process
-  $funcs = config_get('imce_custom_process', array());
+  $funcs = config_get('imce.settings', 'imce_custom_process');
   unset($funcs['imce_mkdir_process_profile']);
-  config_set('imce_custom_process', $funcs);
+  config_set('imce.settings', 'imce_custom_process', $funcs);
 }
