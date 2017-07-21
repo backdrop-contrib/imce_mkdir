@@ -1,6 +1,6 @@
 type = module
 name = IMCE Mkdir
-description = "Allows users to manage directories in IMCE"
+description = "Allows people to manage directories in IMCE"
 backdrop = 1.x
 package = Media
 
