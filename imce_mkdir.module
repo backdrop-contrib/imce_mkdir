@@ -37,8 +37,8 @@ function imce_mkdir_process_profile(&$imce) {
 function imce_mkdir_content(&$imce) {
   if (!$imce['error'] && (imce_perm_exists($imce, 'mkdir') || imce_perm_exists($imce, 'rmdir'))) {
     $path = backdrop_get_path('module', 'imce_mkdir');
-    backdrop_add_js($path . '/imce_mkdir.js');
-    backdrop_add_css($path . '/imce_mkdir.css');
+    backdrop_add_js($path . '/js/imce_mkdir.js');
+    backdrop_add_css($path . '/css/imce_mkdir.css');
     $form = backdrop_get_form('imce_mkdir_form', array('imce' => &$imce));
     return backdrop_render($form);
   }
