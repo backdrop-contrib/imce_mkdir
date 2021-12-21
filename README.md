@@ -24,7 +24,7 @@ CONFIGURING AND USING
 
 3. Click on 'Save configuration' button.
 
-4. To test use IMCE. A new 'Manage directories' tab button will be display. Follow instructions on screen.
+4. To test use IMCE. A new 'Directory' tab button will be display. Follow instructions on screen.
 
 
 License
