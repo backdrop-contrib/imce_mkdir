@@ -1,11 +1,11 @@
 #op-item-mngdir a {
-  background-image: url(dirmanage.png);
+  background-image: url(../images/dirmanage.png);
 }
 #imce-content #edit-mkdir {
-  background-image: url(diradd.png);
+  background-image: url(../images/diradd.png);
 }
 #imce-content #edit-rmdir {
-  background-image: url(dirremove.png);
+  background-image: url(../images/dirremove.png);
 }
 /* Subdirectory selector */
 #subdir-selector {
@@ -39,7 +39,7 @@
   background-color: #fff;
 }
 #subdir-selector-button {
-  background: url(down.png) no-repeat 50% 100%;
+  background: url(../images/down.png) no-repeat 50% 100%;
   display: inline-block;
   width: 14px;
   height: 14px;
